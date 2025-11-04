@@ -57,6 +57,8 @@ export default function Index() {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [isOpening, setIsOpening] = useState(false);
   const [wonItem, setWonItem] = useState<CaseItem | null>(null);
+  const [rouletteItems, setRouletteItems] = useState<CaseItem[]>([]);
+  const [rouletteOffset, setRouletteOffset] = useState(0);
 
   const openCase = (caseItem: CaseItem) => {
     if (balance < caseItem.price) {
@@ -67,22 +69,34 @@ export default function Index() {
     setBalance(balance - caseItem.price);
     setIsOpening(true);
     setWonItem(null);
+    setRouletteOffset(0);
+
+    const items: CaseItem[] = [];
+    for (let i = 0; i < 50; i++) {
+      items.push(possibleItems[Math.floor(Math.random() * possibleItems.length)]);
+    }
+    const winningItem = possibleItems[Math.floor(Math.random() * possibleItems.length)];
+    items[25] = winningItem;
+    setRouletteItems(items);
 
     setTimeout(() => {
-      const randomItem = possibleItems[Math.floor(Math.random() * possibleItems.length)];
-      setWonItem(randomItem);
+      setRouletteOffset(-25 * 180 - 90 + Math.random() * 40 - 20);
+    }, 100);
+
+    setTimeout(() => {
+      setWonItem(winningItem);
       
-      const existingItem = inventory.find(item => item.id === randomItem.id);
+      const existingItem = inventory.find(item => item.id === winningItem.id);
       if (existingItem) {
         setInventory(inventory.map(item => 
-          item.id === randomItem.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === winningItem.id ? { ...item, quantity: item.quantity + 1 } : item
         ));
       } else {
-        setInventory([...inventory, { ...randomItem, quantity: 1 }]);
+        setInventory([...inventory, { ...winningItem, quantity: 1 }]);
       }
       
       setIsOpening(false);
-    }, 3000);
+    }, 4000);
   };
 
   const getRarityColor = (rarity: string) => {
@@ -181,12 +195,39 @@ export default function Index() {
               </div>
             </div>
 
-            {isOpening && (
-              <Card className="bg-black/80 border-green-500 p-8 text-center">
+{isOpening && (
+              <Card className="bg-black/80 border-green-500 p-8">
                 <div className="space-y-6">
-                  <div className="text-6xl animate-pulse">🎰</div>
-                  <h3 className="text-3xl font-bold glow-green">ОТКРЫВАЕМ КЕЙС...</h3>
-                  <Progress value={66} className="h-2" />
+                  <h3 className="text-3xl font-bold glow-green text-center mb-4">ОТКРЫВАЕМ КЕЙС...</h3>
+                  
+                  <div className="relative h-48 overflow-hidden rounded-lg border-2 border-green-500/50 bg-gradient-to-r from-black via-green-500/10 to-black">
+                    <div className="absolute top-1/2 left-1/2 w-1 h-full bg-gradient-to-b from-transparent via-yellow-400 to-transparent transform -translate-x-1/2 -translate-y-1/2 z-20 shadow-[0_0_20px_rgba(255,215,0,0.8)]"></div>
+                    
+                    <div 
+                      className="flex gap-4 absolute top-1/2 -translate-y-1/2 transition-all duration-[3500ms] ease-out px-4"
+                      style={{ 
+                        transform: `translateX(calc(50% + ${rouletteOffset}px)) translateY(-50%)`,
+                      }}
+                    >
+                      {rouletteItems.map((item, index) => (
+                        <div
+                          key={index}
+                          className={`flex-shrink-0 w-40 h-40 rounded-lg border-2 ${getRarityBorder(item.rarity)} bg-black/80 flex flex-col items-center justify-center gap-2 p-4`}
+                        >
+                          <div className="text-5xl">{item.image}</div>
+                          <div className={`text-sm font-bold ${getRarityColor(item.rarity)} text-center`}>
+                            {item.name}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-center gap-2 text-green-400">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                  </div>
                 </div>
               </Card>
             )}
