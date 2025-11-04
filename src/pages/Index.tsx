@@ -59,6 +59,7 @@ export default function Index() {
   const [wonItem, setWonItem] = useState<CaseItem | null>(null);
   const [rouletteItems, setRouletteItems] = useState<CaseItem[]>([]);
   const [rouletteOffset, setRouletteOffset] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const openCase = (caseItem: CaseItem) => {
     if (balance < caseItem.price) {
@@ -85,6 +86,11 @@ export default function Index() {
 
     setTimeout(() => {
       setWonItem(winningItem);
+      
+      if (winningItem.rarity === 'legendary') {
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 3000);
+      }
       
       const existingItem = inventory.find(item => item.id === winningItem.id);
       if (existingItem) {
@@ -114,6 +120,19 @@ export default function Index() {
       case 'epic': return 'border-purple-400 border-glow-purple';
       case 'rare': return 'border-blue-400';
       default: return 'border-green-400 border-glow-green';
+    }
+  };
+
+  const sellItem = (item: InventoryItem) => {
+    const sellPrice = Math.floor(item.price * 0.7);
+    setBalance(balance + sellPrice);
+    
+    if (item.quantity > 1) {
+      setInventory(inventory.map(invItem => 
+        invItem.id === item.id ? { ...invItem, quantity: invItem.quantity - 1 } : invItem
+      ));
+    } else {
+      setInventory(inventory.filter(invItem => invItem.id !== item.id));
     }
   };
 
@@ -233,9 +252,26 @@ export default function Index() {
               </Card>
             )}
 
-            {wonItem && !isOpening && (
-              <Card className={`bg-black/80 border-4 ${getRarityBorder(wonItem.rarity)} p-8 text-center animate-scale-in`}>
-                <div className="space-y-4">
+{wonItem && !isOpening && (
+              <Card className={`bg-black/80 border-4 ${getRarityBorder(wonItem.rarity)} p-8 text-center animate-scale-in relative overflow-hidden`}>
+                {showConfetti && (
+                  <div className="absolute inset-0 pointer-events-none">
+                    {Array.from({ length: 50 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="absolute w-2 h-2 animate-[fall_3s_linear_forwards]"
+                        style={{
+                          left: `${Math.random() * 100}%`,
+                          top: '-10px',
+                          backgroundColor: ['#ffd700', '#00ff41', '#9b59b6', '#0ea5e9'][Math.floor(Math.random() * 4)],
+                          animationDelay: `${Math.random() * 0.5}s`,
+                          transform: `rotate(${Math.random() * 360}deg)`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+                <div className="space-y-4 relative z-10">
                   <div className="text-8xl">{wonItem.image}</div>
                   <h3 className={`text-4xl font-bold ${getRarityColor(wonItem.rarity)}`}>
                     {wonItem.name}
@@ -307,8 +343,12 @@ export default function Index() {
                       <h4 className={`font-bold ${getRarityColor(item.rarity)}`}>{item.name}</h4>
                       <p className="text-green-400">${item.price.toLocaleString()}</p>
                       <Badge className="bg-gray-700">x{item.quantity}</Badge>
-                      <Button className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500">
-                        Продать
+                      <Button 
+                        onClick={() => sellItem(item)}
+                        className="w-full bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500"
+                      >
+                        <Icon name="DollarSign" size={16} className="mr-1" />
+                        Продать за ${Math.floor(item.price * 0.7).toLocaleString()}
                       </Button>
                     </div>
                   </Card>
