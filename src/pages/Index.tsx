@@ -72,16 +72,16 @@ export default function Index() {
     setRouletteOffset(0);
 
     const items: CaseItem[] = [];
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 30; i++) {
       items.push(possibleItems[Math.floor(Math.random() * possibleItems.length)]);
     }
     const winningItem = possibleItems[Math.floor(Math.random() * possibleItems.length)];
-    items[25] = winningItem;
+    items[15] = winningItem;
     setRouletteItems(items);
 
     setTimeout(() => {
-      setRouletteOffset(-25 * 180 - 90 + Math.random() * 40 - 20);
-    }, 100);
+      setRouletteOffset(-15 * 160 - 80 + Math.random() * 30 - 15);
+    }, 50);
 
     setTimeout(() => {
       setWonItem(winningItem);
@@ -96,7 +96,7 @@ export default function Index() {
       }
       
       setIsOpening(false);
-    }, 4000);
+    }, 3000);
   };
 
   const getRarityColor = (rarity: string) => {
@@ -200,22 +200,23 @@ export default function Index() {
                 <div className="space-y-6">
                   <h3 className="text-3xl font-bold glow-green text-center mb-4">ОТКРЫВАЕМ КЕЙС...</h3>
                   
-                  <div className="relative h-48 overflow-hidden rounded-lg border-2 border-green-500/50 bg-gradient-to-r from-black via-green-500/10 to-black">
-                    <div className="absolute top-1/2 left-1/2 w-1 h-full bg-gradient-to-b from-transparent via-yellow-400 to-transparent transform -translate-x-1/2 -translate-y-1/2 z-20 shadow-[0_0_20px_rgba(255,215,0,0.8)]"></div>
+                  <div className="relative h-40 overflow-hidden rounded-lg border-2 border-green-500/50 bg-gradient-to-r from-black via-green-500/10 to-black">
+                    <div className="absolute top-1/2 left-1/2 w-1 h-full bg-gradient-to-b from-transparent via-yellow-400 to-transparent transform -translate-x-1/2 -translate-y-1/2 z-20"></div>
                     
                     <div 
-                      className="flex gap-4 absolute top-1/2 -translate-y-1/2 transition-all duration-[3500ms] ease-out px-4"
+                      className="flex gap-3 absolute top-1/2 -translate-y-1/2 will-change-transform"
                       style={{ 
                         transform: `translateX(calc(50% + ${rouletteOffset}px)) translateY(-50%)`,
+                        transition: rouletteOffset !== 0 ? 'transform 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none',
                       }}
                     >
                       {rouletteItems.map((item, index) => (
                         <div
                           key={index}
-                          className={`flex-shrink-0 w-40 h-40 rounded-lg border-2 ${getRarityBorder(item.rarity)} bg-black/80 flex flex-col items-center justify-center gap-2 p-4`}
+                          className={`flex-shrink-0 w-32 h-32 rounded border ${getRarityBorder(item.rarity)} bg-black/90 flex flex-col items-center justify-center gap-1 p-2`}
                         >
-                          <div className="text-5xl">{item.image}</div>
-                          <div className={`text-sm font-bold ${getRarityColor(item.rarity)} text-center`}>
+                          <div className="text-4xl">{item.image}</div>
+                          <div className={`text-xs font-bold ${getRarityColor(item.rarity)} text-center line-clamp-1`}>
                             {item.name}
                           </div>
                         </div>
