@@ -60,6 +60,7 @@ export default function Index() {
   const [rouletteItems, setRouletteItems] = useState<CaseItem[]>([]);
   const [rouletteOffset, setRouletteOffset] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const openCase = (caseItem: CaseItem) => {
     if (balance < caseItem.price) {
@@ -110,7 +111,7 @@ export default function Index() {
       case 'legendary': return 'text-yellow-400 glow-gold';
       case 'epic': return 'text-purple-400 glow-purple';
       case 'rare': return 'text-blue-400';
-      default: return 'text-green-400 glow-green';
+      default: return 'text-orange-400 glow-orange';
     }
   };
 
@@ -119,7 +120,7 @@ export default function Index() {
       case 'legendary': return 'border-yellow-400 border-glow-gold';
       case 'epic': return 'border-purple-400 border-glow-purple';
       case 'rare': return 'border-blue-400';
-      default: return 'border-green-400 border-glow-green';
+      default: return 'border-orange-400 border-glow-orange';
     }
   };
 
@@ -137,34 +138,43 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
-      <header className="border-b border-green-500/30 bg-black/50 backdrop-blur-lg sticky top-0 z-50">
+    <div className="min-h-screen bg-[#0f1419] text-white" style={{ backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(255, 165, 0, 0.1), transparent 50%)' }}>
+<header className="border-b border-orange-500/30 bg-[#1a1f2e]/95 backdrop-blur-lg sticky top-0 z-50 shadow-lg shadow-orange-500/5">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="text-4xl">🎰</div>
               <div>
-                <h1 className="text-3xl font-bold glow-green">MAJESTIC CASES</h1>
-                <p className="text-xs text-green-400">GTA 5 RP • Case Opening</p>
+                <h1 className="text-3xl font-bold glow-orange tracking-tight">MAJESTIC CASES</h1>
+                <p className="text-xs text-orange-400/80">GTA 5 RP • Case Opening</p>
               </div>
             </div>
             
             <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2 bg-green-500/20 px-4 py-2 rounded border border-green-500/50">
-                <Icon name="DollarSign" className="text-green-400" size={20} />
-                <span className="text-2xl font-bold text-green-400">{balance.toLocaleString()}</span>
+              <div className="flex items-center gap-2 bg-orange-500/10 px-5 py-2.5 rounded-lg border border-orange-500/30">
+                <Icon name="DollarSign" className="text-orange-400" size={20} />
+                <span className="text-2xl font-bold text-orange-400">{balance.toLocaleString()}</span>
               </div>
               
-              <Button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-black font-bold">
+              <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold shadow-lg shadow-orange-500/20">
                 <Icon name="Plus" size={18} className="mr-2" />
                 Пополнить
+              </Button>
+
+              <Button 
+                onClick={() => setIsAdmin(!isAdmin)}
+                variant="outline"
+                className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+              >
+                <Icon name="Settings" size={18} className="mr-2" />
+                {isAdmin ? 'Выход' : 'Админ'}
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      <nav className="bg-black/30 border-b border-green-500/20 backdrop-blur">
+      <nav className="bg-[#1a1f2e]/50 border-b border-orange-500/20 backdrop-blur">
         <div className="container mx-auto px-4">
           <div className="flex gap-2 overflow-x-auto">
             {[
@@ -172,6 +182,7 @@ export default function Index() {
               { id: 'cases', icon: 'Package', label: 'Кейсы' },
               { id: 'inventory', icon: 'Backpack', label: 'Инвентарь' },
               { id: 'rating', icon: 'Trophy', label: 'Рейтинг' },
+              ...(isAdmin ? [{ id: 'admin', icon: 'Shield', label: 'Админ-панель' }] : []),
               { id: 'rules', icon: 'BookOpen', label: 'Правила' },
               { id: 'faq', icon: 'HelpCircle', label: 'FAQ' },
               { id: 'support', icon: 'MessageCircle', label: 'Поддержка' },
@@ -182,8 +193,8 @@ export default function Index() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-4 py-3 font-semibold transition-all ${
                   activeTab === tab.id
-                    ? 'text-green-400 border-b-2 border-green-400'
-                    : 'text-gray-400 hover:text-green-300'
+                    ? 'text-orange-400 border-b-2 border-orange-400'
+                    : 'text-gray-400 hover:text-orange-300'
                 }`}
               >
                 <Icon name={tab.icon as any} size={18} />
@@ -194,15 +205,128 @@ export default function Index() {
         </div>
       </nav>
 
-      <main className="container mx-auto px-4 py-8">
+<main className="container mx-auto px-4 py-8">
+        {activeTab === 'admin' && isAdmin && (
+          <div className="space-y-6 animate-fade-in">
+            <div className="flex items-center justify-between">
+              <h2 className="text-4xl font-bold glow-orange">АДМИН-ПАНЕЛЬ</h2>
+              <Badge className="bg-orange-500/20 text-orange-400 border-orange-500 text-lg px-4 py-2">
+                <Icon name="Shield" size={16} className="mr-2" />
+                Администратор
+              </Badge>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              <Card className="bg-[#1a1f2e]/80 border-orange-500/30 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Icon name="Users" className="text-orange-400" size={24} />
+                  <h3 className="text-xl font-bold text-orange-400">Пользователи</h3>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-white">1,247</p>
+                  <p className="text-sm text-gray-400">Всего пользователей</p>
+                  <Button className="w-full mt-4 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500">
+                    Управление
+                  </Button>
+                </div>
+              </Card>
+
+              <Card className="bg-[#1a1f2e]/80 border-orange-500/30 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Icon name="Package" className="text-orange-400" size={24} />
+                  <h3 className="text-xl font-bold text-orange-400">Кейсы</h3>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-white">12,543</p>
+                  <p className="text-sm text-gray-400">Открыто кейсов</p>
+                  <Button className="w-full mt-4 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500">
+                    Статистика
+                  </Button>
+                </div>
+              </Card>
+
+              <Card className="bg-[#1a1f2e]/80 border-orange-500/30 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Icon name="DollarSign" className="text-orange-400" size={24} />
+                  <h3 className="text-xl font-bold text-orange-400">Доход</h3>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-white">$2.4M</p>
+                  <p className="text-sm text-gray-400">За месяц</p>
+                  <Button className="w-full mt-4 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500">
+                    Отчеты
+                  </Button>
+                </div>
+              </Card>
+            </div>
+
+            <Card className="bg-[#1a1f2e]/80 border-orange-500/30 p-6">
+              <h3 className="text-2xl font-bold text-orange-400 mb-4">Управление кейсами</h3>
+              <div className="space-y-4">
+                {cases.map((caseItem) => (
+                  <div key={caseItem.id} className="flex items-center justify-between p-4 bg-[#0f1419] rounded-lg border border-orange-500/20">
+                    <div className="flex items-center gap-4">
+                      <div className="text-4xl">{caseItem.image}</div>
+                      <div>
+                        <h4 className="font-bold text-white">{caseItem.name}</h4>
+                        <p className="text-sm text-gray-400">{caseItem.rarity}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p className="font-bold text-orange-400">${caseItem.price}</p>
+                      </div>
+                      <Button size="sm" variant="outline" className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10">
+                        <Icon name="Edit" size={16} />
+                      </Button>
+                      <Button size="sm" variant="outline" className="border-red-500/30 text-red-400 hover:bg-red-500/10">
+                        <Icon name="Trash2" size={16} />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+                <Button className="w-full bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500">
+                  <Icon name="Plus" size={18} className="mr-2" />
+                  Добавить новый кейс
+                </Button>
+              </div>
+            </Card>
+
+            <Card className="bg-[#1a1f2e]/80 border-orange-500/30 p-6">
+              <h3 className="text-2xl font-bold text-orange-400 mb-4">Последние транзакции</h3>
+              <div className="space-y-2">
+                {[
+                  { user: 'Vladimir_K', action: 'Открыл VIP Pack', amount: -1000, time: '2 мин назад' },
+                  { user: 'Dmitry_I', action: 'Пополнил баланс', amount: +5000, time: '5 мин назад' },
+                  { user: 'Sergey_P', action: 'Продал Lamborghini', amount: +7000, time: '12 мин назад' },
+                  { user: 'Alex_S', action: 'Открыл Legend Pack', amount: -5000, time: '18 мин назад' },
+                ].map((tx, i) => (
+                  <div key={i} className="flex items-center justify-between p-3 bg-[#0f1419] rounded border border-orange-500/10">
+                    <div>
+                      <p className="font-semibold text-white">{tx.user}</p>
+                      <p className="text-sm text-gray-400">{tx.action}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className={`font-bold ${tx.amount > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {tx.amount > 0 ? '+' : ''}{tx.amount}$
+                      </p>
+                      <p className="text-xs text-gray-500">{tx.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        )}
+
         {(activeTab === 'home' || activeTab === 'cases') && (
           <div className="space-y-8">
-            <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-green-500/20 via-purple-500/20 to-yellow-500/20 border border-green-500/50 p-8 animate-fade-in">
+            <div className="relative overflow-hidden rounded-xl bg-gradient-majestic border border-orange-500/30 p-8 animate-fade-in shadow-lg shadow-orange-500/5">
               <div className="relative z-10">
-                <h2 className="text-5xl font-bold mb-4 glow-green">ОТКРОЙ СВОЙ КЕЙС</h2>
+                <h2 className="text-5xl font-bold mb-4 glow-orange tracking-tight">ОТКРОЙ СВОЙ КЕЙС</h2>
                 <p className="text-xl text-gray-300 mb-6">Получи легендарные предметы из мира GTA 5 Majestic RP</p>
                 <div className="flex gap-4">
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500 text-lg px-4 py-2">
+                  <Badge className="bg-orange-500/20 text-orange-400 border-orange-500 text-lg px-4 py-2">
                     <Icon name="Zap" size={16} className="mr-2" />
                     Мгновенная выдача
                   </Badge>
@@ -215,12 +339,12 @@ export default function Index() {
             </div>
 
 {isOpening && (
-              <Card className="bg-black/80 border-green-500 p-8">
+              <Card className="bg-[#1a1f2e]/80 border-orange-500/30 p-8">
                 <div className="space-y-6">
-                  <h3 className="text-3xl font-bold glow-green text-center mb-4">ОТКРЫВАЕМ КЕЙС...</h3>
+                  <h3 className="text-3xl font-bold glow-orange text-center mb-4">ОТКРЫВАЕМ КЕЙС...</h3>
                   
-                  <div className="relative h-40 overflow-hidden rounded-lg border-2 border-green-500/50 bg-gradient-to-r from-black via-green-500/10 to-black">
-                    <div className="absolute top-1/2 left-1/2 w-1 h-full bg-gradient-to-b from-transparent via-yellow-400 to-transparent transform -translate-x-1/2 -translate-y-1/2 z-20"></div>
+                  <div className="relative h-40 overflow-hidden rounded-lg border-2 border-orange-500/50 bg-gradient-to-r from-[#0f1419] via-orange-500/10 to-[#0f1419]">
+                    <div className="absolute top-1/2 left-1/2 w-1 h-full bg-gradient-to-b from-transparent via-orange-400 to-transparent transform -translate-x-1/2 -translate-y-1/2 z-20"></div>
                     
                     <div 
                       className="flex gap-3 absolute top-1/2 -translate-y-1/2 will-change-transform"
@@ -232,7 +356,7 @@ export default function Index() {
                       {rouletteItems.map((item, index) => (
                         <div
                           key={index}
-                          className={`flex-shrink-0 w-32 h-32 rounded border ${getRarityBorder(item.rarity)} bg-black/90 flex flex-col items-center justify-center gap-1 p-2`}
+                          className={`flex-shrink-0 w-32 h-32 rounded border ${getRarityBorder(item.rarity)} bg-[#1a1f2e]/90 flex flex-col items-center justify-center gap-1 p-2`}
                         >
                           <div className="text-4xl">{item.image}</div>
                           <div className={`text-xs font-bold ${getRarityColor(item.rarity)} text-center line-clamp-1`}>
@@ -243,10 +367,10 @@ export default function Index() {
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-center gap-2 text-green-400">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                  <div className="flex items-center justify-center gap-2 text-orange-400">
+                    <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
                   </div>
                 </div>
               </Card>
@@ -290,13 +414,13 @@ export default function Index() {
               </Card>
             )}
 
-            <div>
-              <h3 className="text-3xl font-bold mb-6 glow-green">ДОСТУПНЫЕ КЕЙСЫ</h3>
+<div>
+              <h3 className="text-3xl font-bold mb-6 glow-orange">ДОСТУПНЫЕ КЕЙСЫ</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {cases.map((caseItem) => (
                   <Card
                     key={caseItem.id}
-                    className={`bg-gradient-gta border-2 ${getRarityBorder(caseItem.rarity)} p-6 hover:scale-105 transition-transform cursor-pointer`}
+                    className={`bg-gradient-gta border-2 ${getRarityBorder(caseItem.rarity)} p-6 hover:scale-105 transition-all cursor-pointer shadow-lg hover:shadow-xl`}
                   >
                     <div className="text-center space-y-4">
                       <div className="text-7xl">{caseItem.image}</div>
@@ -306,14 +430,13 @@ export default function Index() {
                       <Badge className={`${getRarityColor(caseItem.rarity)} text-lg px-4 py-1`}>
                         {caseItem.rarity.toUpperCase()}
                       </Badge>
-                      <div className="text-3xl font-bold text-green-400">
+                      <div className="text-3xl font-bold text-orange-400">
                         ${caseItem.price.toLocaleString()}
                       </div>
                       <Button
                         onClick={() => openCase(caseItem)}
                         disabled={isOpening || balance < caseItem.price}
-                        className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-black font-bold text-lg py-6"
-                        style={{ borderColor: caseItem.color }}
+                        className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-lg py-6 shadow-lg shadow-orange-500/20"
                       >
                         <Icon name="Unlock" size={20} className="mr-2" />
                         Открыть кейс
@@ -326,26 +449,26 @@ export default function Index() {
           </div>
         )}
 
-        {activeTab === 'inventory' && (
+{activeTab === 'inventory' && (
           <div className="space-y-6 animate-fade-in">
-            <h2 className="text-4xl font-bold glow-green">МОЙ ИНВЕНТАРЬ</h2>
+            <h2 className="text-4xl font-bold glow-orange">МОЙ ИНВЕНТАРЬ</h2>
             {inventory.length === 0 ? (
-              <Card className="bg-black/50 border-green-500/30 p-12 text-center">
+              <Card className="bg-[#1a1f2e]/80 border-orange-500/30 p-12 text-center">
                 <Icon name="PackageX" size={64} className="mx-auto mb-4 text-gray-500" />
                 <p className="text-xl text-gray-400">Ваш инвентарь пуст. Откройте кейсы!</p>
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {inventory.map((item) => (
-                  <Card key={item.id} className={`bg-black/80 border-2 ${getRarityBorder(item.rarity)} p-4`}>
+                  <Card key={item.id} className={`bg-[#1a1f2e]/80 border-2 ${getRarityBorder(item.rarity)} p-4`}>
                     <div className="text-center space-y-2">
                       <div className="text-5xl">{item.image}</div>
                       <h4 className={`font-bold ${getRarityColor(item.rarity)}`}>{item.name}</h4>
-                      <p className="text-green-400">${item.price.toLocaleString()}</p>
+                      <p className="text-orange-400">${item.price.toLocaleString()}</p>
                       <Badge className="bg-gray-700">x{item.quantity}</Badge>
                       <Button 
                         onClick={() => sellItem(item)}
-                        className="w-full bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500"
+                        className="w-full bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500"
                       >
                         <Icon name="DollarSign" size={16} className="mr-1" />
                         Продать за ${Math.floor(item.price * 0.7).toLocaleString()}
@@ -360,21 +483,21 @@ export default function Index() {
 
         {activeTab === 'rating' && (
           <div className="space-y-6 animate-fade-in">
-            <h2 className="text-4xl font-bold glow-green">ТОП ИГРОКОВ</h2>
-            <Card className="bg-black/50 border-green-500/30">
-              <div className="divide-y divide-green-500/20">
+            <h2 className="text-4xl font-bold glow-orange">ТОП ИГРОКОВ</h2>
+            <Card className="bg-[#1a1f2e]/80 border-orange-500/30">
+              <div className="divide-y divide-orange-500/20">
                 {leaderboard.map((player, index) => (
-                  <div key={player.id} className="p-4 flex items-center gap-4 hover:bg-green-500/10 transition-colors">
+                  <div key={player.id} className="p-4 flex items-center gap-4 hover:bg-orange-500/10 transition-colors">
                     <div className={`text-3xl font-bold ${index === 0 ? 'text-yellow-400' : index === 1 ? 'text-gray-300' : index === 2 ? 'text-orange-600' : 'text-gray-500'}`}>
                       #{index + 1}
                     </div>
                     <div className="text-4xl">{player.avatar}</div>
                     <div className="flex-1">
-                      <h4 className="text-xl font-bold text-green-400">{player.name}</h4>
+                      <h4 className="text-xl font-bold text-orange-400">{player.name}</h4>
                       <p className="text-gray-400">Уровень {player.level}</p>
                     </div>
                     <div className="text-right">
-                      <div className="text-2xl font-bold text-yellow-400">{player.wins}</div>
+                      <div className="text-2xl font-bold text-orange-400">{player.wins}</div>
                       <p className="text-sm text-gray-400">побед</p>
                     </div>
                   </div>
@@ -384,29 +507,29 @@ export default function Index() {
           </div>
         )}
 
-        {activeTab === 'rules' && (
+{activeTab === 'rules' && (
           <div className="space-y-6 animate-fade-in">
-            <h2 className="text-4xl font-bold glow-green">ПРАВИЛА</h2>
-            <Card className="bg-black/50 border-green-500/30 p-6">
+            <h2 className="text-4xl font-bold glow-orange">ПРАВИЛА</h2>
+            <Card className="bg-[#1a1f2e]/80 border-orange-500/30 p-6">
               <div className="space-y-4 text-lg">
                 <div className="flex gap-3">
-                  <Icon name="Check" className="text-green-400 mt-1" />
+                  <Icon name="Check" className="text-orange-400 mt-1" />
                   <p>Запрещено использование читов и сторонних программ</p>
                 </div>
                 <div className="flex gap-3">
-                  <Icon name="Check" className="text-green-400 mt-1" />
+                  <Icon name="Check" className="text-orange-400 mt-1" />
                   <p>Один аккаунт на одного игрока</p>
                 </div>
                 <div className="flex gap-3">
-                  <Icon name="Check" className="text-green-400 mt-1" />
+                  <Icon name="Check" className="text-orange-400 mt-1" />
                   <p>Вывод предметов только через официальную систему</p>
                 </div>
                 <div className="flex gap-3">
-                  <Icon name="Check" className="text-green-400 mt-1" />
+                  <Icon name="Check" className="text-orange-400 mt-1" />
                   <p>Соблюдайте уважительное отношение к другим игрокам</p>
                 </div>
                 <div className="flex gap-3">
-                  <Icon name="Check" className="text-green-400 mt-1" />
+                  <Icon name="Check" className="text-orange-400 mt-1" />
                   <p>Администрация оставляет за собой право блокировки аккаунта при нарушении правил</p>
                 </div>
               </div>
